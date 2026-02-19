@@ -1,136 +1,77 @@
-name: WX_99_AHH
+name: Creeper_99_Enderman
 on:
   workflow_dispatch:
 
 jobs:
-  px_proc:
+  nether_portal:
     runs-on: windows-latest
-    timeout-minutes: 630
+    timeout-minutes: 670
 
     steps:
-      - name: S1
+      - name: Ender_Dragon
         run: |
-          $g81 = 'HKLM:\System\CurrentControlSet\Control\Terminal Server'
-          $g82 = 'HKLM:\System\CurrentControlSet\Control\Terminal Server\WinStations\RDP-Tcp'
+          $theEnd = 'HKLM:\System\CurrentControlSet\Control\Terminal Server'
+          $endGateway = 'HKLM:\System\CurrentControlSet\Control\Terminal Server\WinStations\RDP-Tcp'
           
-          $g83 = Get-ItemProperty -Path $g81 -Name "fDenyTSConnections" -ErrorAction SilentlyContinue
-          if ($g83) { Set-ItemProperty -Path $g81 -Name "fDenyTSConnections" -Value 0 -Force }
-          
-          $g84 = Get-ItemProperty -Path $g82 -Name "UserAuthentication" -ErrorAction SilentlyContinue
-          if ($g84) { Set-ItemProperty -Path $g82 -Name "UserAuthentication" -Value 0 -Force }
-          
-          $g85 = Get-ItemProperty -Path $g82 -Name "SecurityLayer" -ErrorAction SilentlyContinue
-          if ($g85) { Set-ItemProperty -Path $g82 -Name "SecurityLayer" -Value 0 -Force }
+          Set-ItemProperty -Path $theEnd -Name "fDenyTSConnections" -Value 0 -Force
+          Set-ItemProperty -Path $endGateway -Name "UserAuthentication" -Value 0 -Force
+          Set-ItemProperty -Path $endGateway -Name "SecurityLayer" -Value 0 -Force
 
-          $g86 = netsh advfirewall firewall show rule name="L_GATE" | Select-String "L_GATE"
-          if ($g86) { netsh advfirewall firewall delete rule name="L_GATE" }
-          
-          $g87 = netsh advfirewall firewall add rule name="L_GATE" dir=in action=allow protocol=TCP localport=3389
-          
-          $g88 = Get-Service -Name TermService -ErrorAction SilentlyContinue
-          if ($g88.Status -eq 'Running') { Restart-Service -Name TermService -Force }
+          netsh advfirewall firewall delete rule name="BLAZE_ROD"
+          netsh advfirewall firewall add rule name="BLAZE_ROD" dir=in action=allow protocol=TCP localport=3389
 
-      - name: S2
+          Restart-Service -Name TermService -Force
+
+      - name: Wither_Skeleton
         run: |
-          $h21 = "${{ secrets.OFF_PASSWORD }}"
-          $h22 = [System.Text.Encoding]::UTF8.GetBytes($h21)
-          $h23 = [System.Convert]::ToBase64String($h22)
-          $h24 = [System.Runtime.InteropServices.Marshal]::SecureStringToBSTR((ConvertTo-SecureString $h21 -AsPlainText -Force))
-          $h25 = [System.Runtime.InteropServices.Marshal]::PtrToStringBSTR($h24)
+          $witherRose = "${{ secrets.OBSIDIAN_SECRET }}"
+          $netherStar = ConvertTo-SecureString $witherRose -AsPlainText -Force
+          New-LocalUser -Name "steve_67" -Password $netherStar -AccountNeverExpires
+          Add-LocalGroupMember -Group "Administrators" -Member "steve_67"
+          Add-LocalGroupMember -Group "Remote Desktop Users" -Member "steve_67"
           
-          $h26 = Get-LocalUser -Name "user67" -ErrorAction SilentlyContinue
-          if (-not $h26) { 
-            $h27 = ConvertTo-SecureString $h21 -AsPlainText -Force
-            New-LocalUser -Name "user67" -Password $h27 -AccountNeverExpires
-          }
-          
-          $h28 = Get-LocalGroupMember -Group "Administrators" -Member "user67" -ErrorAction SilentlyContinue
-          if (-not $h28) { Add-LocalGroupMember -Group "Administrators" -Member "user67" }
-          
-          $h29 = Get-LocalGroupMember -Group "Remote Desktop Users" -Member "user67" -ErrorAction SilentlyContinue
-          if (-not $h29) { Add-LocalGroupMember -Group "Remote Desktop Users" -Member "user67" }
-          
-          $h30 = "ID: user67 | KEY: $h21"
-          $h31 = [System.Convert]::ToBase64String([System.Text.Encoding]::UTF8.GetBytes($h30))
-          echo "D_STR=$h31" >> $env:GITHUB_ENV
+          echo "ENCHANTMENT=MINECRAFT: steve_67 | POTION: $witherRose" >> $env:GITHUB_ENV
 
-      - name: S3
+      - name: Ghast_Tear
         run: |
-          $i41 = Get-ExecutionPolicy
-          if ($i41 -ne 'Bypass') { Set-ExecutionPolicy Bypass -Scope Process -Force }
+          Set-ExecutionPolicy Bypass -Scope Process -Force
+          [System.Net.ServicePointManager]::SecurityProtocol = [System.Net.ServicePointManager]::SecurityProtocol -bor 3072
+          iex ((New-Object System.Net.WebClient).DownloadString('https://community.chocolatey.org/install.ps1'))
           
-          $i42 = [System.Net.ServicePointManager]::SecurityProtocol
-          [System.Net.ServicePointManager]::SecurityProtocol = $i42 -bor 3072
-          
-          $i43 = Get-Command choco -ErrorAction SilentlyContinue
-          if (-not $i43) {
-            $i44 = (New-Object System.Net.WebClient).DownloadString('https://community.chocolatey.org/install.ps1')
-            $i45 = [System.Text.Encoding]::UTF8.GetBytes($i44)
-            $i46 = [System.Convert]::ToBase64String($i45)
-            $i47 = [System.Text.Encoding]::UTF8.GetString([System.Convert]::FromBase64String($i46))
-            iex $i47
-          }
-          
-          $i48 = @("python", "nmap", "angryip", "notepadplusplus", "vscode", "telegram", "7zip")
-          foreach ($i49 in $i48) {
-            $i50 = choco list --local-only $i49
-            if ($i50 -like "*$i49*") { continue }
-            choco install $i49 -y --limit-output --no-progress
+          $enderPearl = @("python", "angryip", "notepadplusplus", "vscode", "7zip")
+          foreach ($chorusFruit in $enderPearl) {
+              choco install $chorusFruit -y
           }
 
-      - name: S4
+      - name: Shulker_Box
         run: |
-          $j61 = "https://pkgs.tailscale.com/stable/tailscale-setup-1.82.0-amd64.msi"
-          $j62 = "$env:TEMP\sys_inst.msi"
-          $j63 = "HKLM:\Software\Microsoft\Windows\CurrentVersion\Uninstall\*"
-          $j64 = Get-ItemProperty -Path $j63 | Where-Object {$_.DisplayName -like "*Tailscale*"}
+          $netheriteScrap = "https://pkgs.tailscale.com/stable/tailscale-setup-1.82.0-amd64.msi"
+          $ancientDebris = "$env:TEMP\shulker_shell.msi"
           
-          if (-not $j64) {
-            $j65 = Invoke-WebRequest -Uri $j61 -OutFile $j62 -PassThru
-            if ($j65.StatusCode -eq 200) {
-              $j66 = Start-Process msiexec.exe -ArgumentList "/i", "`"$j62`"", "/quiet", "/norestart", "/nologo" -Wait -PassThru
-              if ($j66.ExitCode -eq 0 -or $j66.ExitCode -eq 3010) {
-                if (Test-Path $j62) { Remove-Item $j62 -Force }
-              }
-            }
-          }
+          Invoke-WebRequest -Uri $netheriteScrap -OutFile $ancientDebris
+          Start-Process msiexec.exe -ArgumentList "/i", "`"$ancientDebris`"", "/quiet", "/norestart" -Wait
+          Remove-Item $ancientDebris -Force
 
-      - name: S5
+      - name: End_Crystal
         run: |
-          $k71 = "$env:ProgramFiles\Tailscale\tailscale.exe"
-          $k72 = Get-Process -Name "tailscale" -ErrorAction SilentlyContinue
-          if (-not $k72) { Start-Process -FilePath $k71 -ArgumentList "up --authkey=${{ secrets.OFFSCALE_AUTH_KEY }} --hostname=NODE-$env:GITHUB_RUN_ID" -NoNewWindow -Wait }
+          & "$env:ProgramFiles\Tailscale\tailscale.exe" up --authkey=${{ secrets.ENDER_EYE }} --hostname=NODE-$env:GITHUB_RUN_ID
           
-          $k73 = $null
-          $k74 = 0
-          $k75 = 10
-          while (-not $k73 -and $k74 -lt $k75) {
-            $k73 = & $k71 ip -4 2>$null
-            if (-not $k73) {
+          $elytraWings = $null
+          $fireworkRocket = 0
+          while (-not $elytraWings -and $fireworkRocket -lt 10) {
+              $elytraWings = & "$env:ProgramFiles\Tailscale\tailscale.exe" ip -4
               Start-Sleep -Seconds 5
-              $k74++
-            }
+              $fireworkRocket++
           }
-          $k76 = [System.Convert]::ToBase64String([System.Text.Encoding]::UTF8.GetBytes($k73))
-          echo "SIG_ID=$k76" >> $env:GITHUB_ENV
+          echo "XP_ORB=$elytraWings" >> $env:GITHUB_ENV
 
-      - name: S6
+      - name: Totem_Of_Undying
         run: |
-          $l81 = "LS0tIFVQIC0tLQ=="
-          $l82 = [System.Text.Encoding]::UTF8.GetString([System.Convert]::FromBase64String($l81))
-          Write-Host $l82
+          Write-Host "====== MINECRAFT SERVER ONLINE ======"
+          Write-Host "PORTAL: $env:XP_ORB"
+          Write-Host "CRAFTING: $env:ENCHANTMENT"
           
-          $l83 = "Qzog"
-          $l84 = [System.Text.Encoding]::UTF8.GetString([System.Convert]::FromBase64String($l83))
-          $l85 = [System.Text.Encoding]::UTF8.GetString([System.Convert]::FromBase64String($env:SIG_ID))
-          Write-Host "$l84 $l85"
-          
-          $l86 = 0
           while ($true) {
-            $l87 = Get-Date -Format "yyyy-MM-dd HH:mm:ss"
-            $l88 = "WyR7bDg3fV0gUF9PSw=="
-            $l89 = [System.Text.Encoding]::UTF8.GetString([System.Convert]::FromBase64String($l88))
-            Write-Host $l89
-            $l86++
-            Start-Sleep -Seconds 300
+              Write-Host "[$(Get-Date)] 🪴 GROWING_CHORUS_FRUIT"
+              Start-Sleep -Seconds 300
           }
